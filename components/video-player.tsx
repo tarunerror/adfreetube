@@ -5,7 +5,7 @@ import { Loader2, Share2, Heart, Repeat, Repeat1, Volume2, Volume1, VolumeX } fr
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { useFavorites } from "@/hooks/use-favorites"
-import { toast } from "@/hooks/use-toast"
+import { toast } from "@/components/ui/use-toast"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface VideoPlayerProps {

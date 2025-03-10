@@ -5,9 +5,16 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const regionCode = searchParams.get("regionCode") || "US"
 
+    const apiKey = process.env.YOUTUBE_API_KEY
+
+    if (!apiKey) {
+      console.error("YouTube API key is missing in environment variables")
+      throw new Error("YouTube API key is not configured. Please check your environment variables.")
+    }
+
     // Fetch video categories from YouTube API
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=${regionCode}&key=${process.env.YOUTUBE_API_KEY}`,
+      `https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=${regionCode}&key=${apiKey}`,
     )
 
     if (!response.ok) {

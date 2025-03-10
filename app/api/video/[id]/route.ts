@@ -4,13 +4,20 @@ export async function GET(request: Request, { params }: { params: { id: string }
   try {
     const videoId = params.id
 
+    const apiKey = process.env.YOUTUBE_API_KEY
+
+    if (!apiKey) {
+      console.error("YouTube API key is missing in environment variables")
+      throw new Error("YouTube API key is not configured. Please check your environment variables.")
+    }
+
     if (!videoId) {
       return NextResponse.json({ error: "Video ID is required" }, { status: 400 })
     }
 
     // Fetch video details from YouTube API
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoId}&key=${process.env.YOUTUBE_API_KEY}`,
+      `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoId}&key=${apiKey}`,
     )
 
     if (!response.ok) {

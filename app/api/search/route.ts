@@ -6,13 +6,20 @@ export async function GET(request: Request) {
     const query = searchParams.get("q")
     const maxResults = searchParams.get("maxResults") || "10"
 
+    const apiKey = process.env.YOUTUBE_API_KEY
+
+    if (!apiKey) {
+      console.error("YouTube API key is missing in environment variables")
+      throw new Error("YouTube API key is not configured. Please check your environment variables.")
+    }
+
     if (!query) {
       return NextResponse.json({ error: "Search query is required" }, { status: 400 })
     }
 
     // Use the YouTube API to search for videos
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=${maxResults}&key=${process.env.YOUTUBE_API_KEY}`,
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=${maxResults}&key=${apiKey}`,
     )
 
     if (!response.ok) {

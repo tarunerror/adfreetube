@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from "@/components/auth-provider"
+import { VideoQueueProvider } from "@/hooks/use-video-queue"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -36,7 +37,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            {children}
+            <VideoQueueProvider>{children}</VideoQueueProvider>
             <Toaster />
           </ThemeProvider>
         </AuthProvider>

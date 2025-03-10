@@ -7,9 +7,16 @@ export async function GET(request: Request) {
     const regionCode = searchParams.get("regionCode") || "US"
     const maxResults = searchParams.get("maxResults") || "12"
 
+    const apiKey = process.env.YOUTUBE_API_KEY
+
+    if (!apiKey) {
+      console.error("YouTube API key is missing in environment variables")
+      throw new Error("YouTube API key is not configured. Please check your environment variables.")
+    }
+
     // Use the actual YouTube API with the provided API key
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${regionCode}${categoryId ? `&videoCategoryId=${categoryId}` : ""}&maxResults=${maxResults}&key=${process.env.YOUTUBE_API_KEY}`,
+      `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${regionCode}${categoryId ? `&videoCategoryId=${categoryId}` : ""}&maxResults=${maxResults}&key=${apiKey}`,
     )
 
     if (!response.ok) {

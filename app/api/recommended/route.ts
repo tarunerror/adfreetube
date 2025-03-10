@@ -6,13 +6,20 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions)
 
+    const apiKey = process.env.YOUTUBE_API_KEY
+
+    if (!apiKey) {
+      console.error("YouTube API key is missing in environment variables")
+      throw new Error("YouTube API key is not configured. Please check your environment variables.")
+    }
+
     if (!session?.accessToken) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 })
     }
 
     // Fetch recommended videos from YouTube API using the user's access token
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/activities?part=snippet,contentDetails&mine=true&maxResults=12&key=${process.env.YOUTUBE_API_KEY}`,
+      `https://www.googleapis.com/youtube/v3/activities?part=snippet,contentDetails&mine=true&maxResults=12&key=${apiKey}`,
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
