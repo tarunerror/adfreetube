@@ -16,11 +16,11 @@ export function useAuth() {
     : null
 
   const signIn = () => {
-    nextAuthSignIn("google", { callbackUrl: "/" })
+    nextAuthSignIn("google", { callbackUrl: "localhost:3000" })
   }
 
   const signOut = () => {
-    nextAuthSignOut({ callbackUrl: "/" })
+    nextAuthSignOut({ callbackUrl: "localhost:3000" })
   }
 
   return {
