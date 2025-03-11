@@ -29,28 +29,38 @@ export default function RelatedVideos({ videoId, onVideoSelect }: RelatedVideosP
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!videoId) {
+      setError("Invalid video ID.")
+      setIsLoading(false)
+      return
+    }
+
     const fetchRelatedVideos = async () => {
       try {
         setIsLoading(true)
         setError(null)
 
+        console.log("Fetching related videos for:", videoId)
+
         const response = await fetch(`/api/related/${videoId}`)
 
         if (!response.ok) {
           const errorData = await response.json()
+          console.error("API Error:", errorData)
           throw new Error(errorData.error || "Failed to fetch related videos")
         }
 
         const data = await response.json()
 
         if (!data.items || data.items.length === 0) {
-          throw new Error("No related videos found")
+          setError("No related videos found.")
+          return
         }
 
         setRelatedVideos(data.items)
       } catch (err: any) {
-        console.error("Error fetching related videos:", err)
-        setError(err.message || "Unable to load related videos")
+        console.error("Error fetching related videos:", err.message || err)
+        setError("Unable to load related videos. Please try again.")
       } finally {
         setIsLoading(false)
       }
@@ -59,24 +69,6 @@ export default function RelatedVideos({ videoId, onVideoSelect }: RelatedVideosP
     fetchRelatedVideos()
   }, [videoId])
 
-  if (error) {
-    return null // Don't show any error UI for related videos
-  }
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  }
-
-  const item = {
-    hidden: { opacity: 0, x: -20 },
-    show: { opacity: 1, x: 0 },
-  }
 
   if (isLoading) {
     return (
@@ -100,8 +92,27 @@ export default function RelatedVideos({ videoId, onVideoSelect }: RelatedVideosP
     )
   }
 
+  if (error) {
+    return <p className="text-destructive mt-4">{error}</p>
+  }
+
   if (relatedVideos.length === 0) {
-    return null
+    return <p className="mt-4">No related videos available.</p>
+  }
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  }
+
+  const item = {
+    hidden: { opacity: 0, x: -20 },
+    show: { opacity: 1, x: 0 },
   }
 
   return (
@@ -127,28 +138,11 @@ export default function RelatedVideos({ videoId, onVideoSelect }: RelatedVideosP
               <CardContent className="p-3 flex gap-3">
                 <div className="w-40 h-24 flex-shrink-0 relative rounded-md overflow-hidden">
                   <img
-                    src={video.thumbnails.medium.url || "/placeholder.svg"}
+                    src={video.thumbnails.medium?.url || "/placeholder.svg"}
                     alt={video.title}
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                    <div className="bg-white/90 text-black rounded-full p-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                      </svg>
-                    </div>
-                  </div>
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm line-clamp-2">{video.title}</h4>
@@ -165,4 +159,3 @@ export default function RelatedVideos({ videoId, onVideoSelect }: RelatedVideosP
     </motion.div>
   )
 }
-
